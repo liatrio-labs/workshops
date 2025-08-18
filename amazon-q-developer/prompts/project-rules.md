@@ -1,0 +1,1 @@
+Using our product requirements and supporting documentation. Suggest a set of project rules following best practices for our tech stack and architecture, to include but not limited to the directory structure, file naming conventions, and any other recommended rules we should follow. Place them in .amazonq/rules/rules.md
