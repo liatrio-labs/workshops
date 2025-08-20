@@ -1,15 +1,66 @@
-Create a new plan to perform the following:
+# Feature Development Workflow
 
-1. Examine the docs in the docs directory and examine the product requirements document to understand the project.
-2. Confirm the feature file is ready (no status exists, dependencies satisfied, acceptance criteria clear).
-3. Create a new dedicated feature branch.
-4. Update the feature file status to `in-progress` and commit that change.  
-5. Using a test driven development workflow, scaffold test cases that map to each acceptance criterion.
-6. Run the tests.
-6. Build the smallest vertical slice which satisfies a test, committing focused increments.
-7. Iterate using a test driven development workflow until all criteria pass. Always run tests non-interactively.
-8. Once the tests pass, update related the specifications to mark the acceptance criteria and test requirements as completed. 
-9. Self-review by running the full test suite, linters, and security scans locally.
-10. Use @project-code-review to perform a code review.
-11. Update the feature status to dev-complete.
-12. Save the plan you created to the docs/feature relating the filename to the number of the feature you worked on.
+## Objective
+Execute test-driven development for a specific feature using Amazon Q Developer.
+
+## Prerequisites
+- Feature file exists in `docs/features/` with clear acceptance criteria
+- Project documentation is available in `docs/`
+- Development environment is set up
+
+## Process
+
+### 1. Project Context Review
+- Examine documentation in `docs/` directory
+- Review product requirements document
+- Understand project architecture and constraints
+
+### 2. Feature Readiness Check
+- Feature file has clear acceptance criteria
+- Dependencies are satisfied or documented
+- No blocking status exists
+
+### 3. Branch Management
+```bash
+git checkout -b feature/[feature-name]
+```
+
+### 4. Update Feature Status
+- Mark feature status as `in-progress` in feature file
+- Commit status change with descriptive message
+
+### 5. Test-Driven Development Cycle
+- **Write Tests First:** Create test cases for each acceptance criterion
+- **Run Tests:** Verify tests fail initially (red phase)
+- **Implement Code:** Build minimal code to pass tests (green phase)
+- **Refactor:** Improve code quality while keeping tests passing
+- **Repeat:** Continue until all acceptance criteria are met
+
+### 6. Quality Assurance
+- Run full test suite non-interactively
+- Execute linters and code quality checks
+- Perform security scans
+- Address any issues found
+
+### 7. Code Review Process
+- Self-review all changes
+- Use `@prompts/project-code-review.md` for systematic review
+- Document findings and address feedback
+
+### 8. Feature Completion
+- Update feature status to `dev-complete`
+- Mark acceptance criteria as completed
+- Update test requirements status
+- Save development plan to `docs/features/[feature-number]-plan.md`
+
+## Success Criteria
+- All tests pass
+- Code quality checks pass
+- Security scans clear
+- Feature meets all acceptance criteria
+- Documentation is updated
+
+## Error Handling
+- **Test failures:** Review acceptance criteria and implementation
+- **Quality issues:** Address linter/security findings before proceeding
+- **Merge conflicts:** Resolve with main branch before completion
