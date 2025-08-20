@@ -11,7 +11,7 @@ This workflow demonstrates a complete project lifecycle using Amazon Q Developer
 
 | Step | Phase | Task | Instruction | Expected Output | Validation |
 |------|-------|------|--------|-----------------|------------|
-| 1 | Setup | Initialize Project Structure | `git init && mkdir -p docs && cp prd.md docs/` | Directory structure created | ✅ Folders exist, PRD copied |
+| 1 | Setup | Initialize Project Structure | `git init && mkdir -p docs && mv prd.md docs/` | Directory structure created | ✅ Folders exist, PRD copied |
 | 2 | Analysis | Generate User Stories | `@project-user-stories @prd.md` | `docs/user-stories.md` | ✅ Stories follow standard format with acceptance criteria |
 | 3 | Analysis | Explore Architecture Options | `@project-architecture-options @prd.md` | `selected architecture document` | ✅ At least 3 architecture options with pros/cons |
 | 4 | Analysis | Save Architecture Document | "Save the architecture document to @docs" | Architecture saved to docs/ | ✅ Architecture document exists in docs directory |
