@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Amazon Q Developer Workshop Prompts Installer
-# This script copies prompt files to ~/.aws/amazonq/prompts/ with user confirmation
+# This script copies prompt files to ~/.aws/amazonq/prompts/
 
 set -e
 
@@ -27,6 +27,39 @@ if [ ! -d "$SOURCE_DIR" ]; then
     exit 1
 fi
 
+# Count files and check for existing files
+total_files=0
+existing_files=0
+files_to_copy=()
+
+echo -e "${BLUE}Analyzing prompt files...${NC}"
+for file in "$SOURCE_DIR"/*.md; do
+    if [ -f "$file" ]; then
+        filename=$(basename "$file")
+        dest_file="$DEST_DIR/$filename"
+        total_files=$((total_files + 1))
+        
+        if [ -f "$dest_file" ]; then
+            existing_files=$((existing_files + 1))
+            echo -e "${YELLOW}  ⚠️  $filename (already exists)${NC}"
+        else
+            files_to_copy+=("$file")
+            echo -e "${GREEN}  ✓  $filename${NC}"
+        fi
+    fi
+done
+
+echo ""
+echo -e "${BLUE}Installation Plan:${NC}"
+echo "  • Source: $SOURCE_DIR"
+echo "  • Destination: $DEST_DIR"
+echo "  • Total files found: $total_files"
+echo "  • Files to copy: $((total_files - existing_files))"
+if [ $existing_files -gt 0 ]; then
+    echo -e "  • ${YELLOW}Existing files (will be skipped): $existing_files${NC}"
+fi
+echo ""
+
 # Create destination directory if it doesn't exist
 if [ ! -d "$DEST_DIR" ]; then
     echo -e "${YELLOW}Creating directory: $DEST_DIR${NC}"
@@ -35,74 +68,41 @@ if [ ! -d "$DEST_DIR" ]; then
     echo ""
 fi
 
-# Function to prompt user for confirmation
-confirm_copy() {
-    local file="$1"
-    local dest_file="$2"
-    
-    echo -e "${BLUE}File:${NC} $file"
-    
-    # Check if destination file already exists
-    if [ -f "$dest_file" ]; then
-        echo -e "${YELLOW}Warning: File already exists at destination!${NC}"
-        echo -e "${YELLOW}Destination:${NC} $dest_file"
-        echo ""
-        read -p "Skip this file? (y/N): " -n 1 -r
-        echo ""
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
-            echo -e "${YELLOW}Skipped: $file${NC}"
-            return 1
-        else
-            echo -e "${RED}Aborted: Will not overwrite existing file${NC}"
-            return 1
-        fi
-    fi
-    
-    echo -e "${BLUE}Destination:${NC} $dest_file"
-    echo ""
-    read -p "Copy this file? (Y/n): " -n 1 -r
-    echo ""
-    
-    if [[ $REPLY =~ ^[Nn]$ ]]; then
-        echo -e "${YELLOW}Skipped: $file${NC}"
-        return 1
-    fi
-    
-    return 0
-}
+# Ask for confirmation to proceed
+if [ ${#files_to_copy[@]} -eq 0 ]; then
+    echo -e "${YELLOW}All prompt files already exist at destination.${NC}"
+    echo -e "${BLUE}No files need to be copied.${NC}"
+    exit 0
+fi
 
-# Counter for statistics
-total_files=0
-copied_files=0
-skipped_files=0
-
-echo -e "${BLUE}Found prompt files:${NC}"
+read -p "Proceed with installation? (Y/n): " -n 1 -r
 echo ""
 
-# Process each .md file in the prompts directory
-for file in "$SOURCE_DIR"/*.md; do
-    if [ -f "$file" ]; then
-        filename=$(basename "$file")
-        dest_file="$DEST_DIR/$filename"
-        total_files=$((total_files + 1))
-        
-        if confirm_copy "$filename" "$dest_file"; then
-            cp "$file" "$dest_file"
-            echo -e "${GREEN}Copied: $filename${NC}"
-            copied_files=$((copied_files + 1))
-        else
-            skipped_files=$((skipped_files + 1))
-        fi
-        echo ""
-    fi
+if [[ $REPLY =~ ^[Nn]$ ]]; then
+    echo -e "${YELLOW}Installation cancelled.${NC}"
+    exit 0
+fi
+
+echo ""
+echo -e "${BLUE}Installing prompts...${NC}"
+
+# Copy all files at once
+copied_files=0
+for file in "${files_to_copy[@]}"; do
+    filename=$(basename "$file")
+    dest_file="$DEST_DIR/$filename"
+    
+    cp "$file" "$dest_file"
+    echo -e "${GREEN}  ✓ Copied: $filename${NC}"
+    copied_files=$((copied_files + 1))
 done
 
-# Summary
+echo ""
 echo "=============================================="
 echo -e "${BLUE}Installation Summary:${NC}"
 echo "Total files found: $total_files"
 echo -e "${GREEN}Files copied: $copied_files${NC}"
-echo -e "${YELLOW}Files skipped: $skipped_files${NC}"
+echo -e "${YELLOW}Files skipped: $existing_files${NC}"
 echo ""
 
 if [ $copied_files -gt 0 ]; then
@@ -111,8 +111,6 @@ if [ $copied_files -gt 0 ]; then
     echo ""
     echo -e "${BLUE}You can now use these prompts in Amazon Q Developer with:${NC}"
     echo "@project-user-stories, @project-architecture-options, @dev, etc."
-else
-    echo -e "${YELLOW}No files were copied.${NC}"
 fi
 
 echo ""
